@@ -151,9 +151,9 @@ function App() {
               style={{ display: 'flex', justifyContent: 'center' }}
             >
               <img 
-                src="/assets/book_cover.png" 
-                alt="Portada del libro de Economía de la IA y Prompt Engineering" 
-                style={{ maxWidth: '400px', width: '100%', borderRadius: '1rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }} 
+                src="/assets/lectora.png" 
+                alt="Ingeniera leyendo el libro de Prompt Engineering mientras trabaja" 
+                style={{ maxWidth: '450px', width: '100%', borderRadius: '1rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }} 
               />
             </motion.div>
           </div>
