@@ -159,33 +159,82 @@ function App() {
           </div>
         </section>
 
-        <section className="section" id="contenido">
-          <h2>Tabla de Contenido Principal</h2>
-          <div className="toc-grid">
-            <motion.div className="toc-item" whileHover={{ scale: 1.02 }}>
-              <h3>1. Economía y Tokens</h3>
-              <ul>
-                <li>El Costo Oculto de "Solo Usar ChatGPT"</li>
-                <li>Cómo Piensa un LLM Realmente</li>
-                <li>El Ecosistema 2026: Llama 4 a Claude 4.5</li>
+        <section className="section" id="contenido" style={{ padding: '6rem 0' }}>
+          <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem' }}>Tabla de Contenido Oficial</h2>
+          <div className="toc-elaborate-grid">
+            
+            {/* Parte 1 */}
+            <motion.div 
+              className="toc-part-card"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="toc-part-header">
+                <span className="part-number">Parte 1</span>
+                <h3>Fundamentos y Optimización</h3>
+                <p>Domina las bases de la IA Generativa, reduce tus costos de API dramáticamente y entiende la arquitectura de memoria.</p>
+              </div>
+              <ul className="chapter-list">
+                <li><strong>Capítulo 1:</strong> El Costo Oculto de "Solo Usar ChatGPT"</li>
+                <li><strong>Capítulo 2:</strong> Cómo Piensa un LLM</li>
+                <li><strong>Capítulo 3:</strong> Setup del Entorno de Trabajo Profesional</li>
+                <li><strong>Capítulo 4:</strong> Prompt Engineering Orientado a Eficiencia</li>
+                <li><strong>Capítulo 5:</strong> Chain of Thought y Razonamiento Controlado</li>
+                <li><strong>Capítulo 6:</strong> Prompt Caching</li>
+                <li><strong>Capítulo 7:</strong> Selección Dinámica de Modelos</li>
               </ul>
             </motion.div>
-            <motion.div className="toc-item" whileHover={{ scale: 1.02 }}>
-              <h3>2. Patrones Estructurales</h3>
-              <ul>
-                <li>Anatomía del Prompt Perfecto</li>
-                <li>System Prompts y Context Caching</li>
-                <li>Inyección Dinámica de Textos (RAG)</li>
+
+            {/* Parte 2 */}
+            <motion.div 
+              className="toc-part-card"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <div className="toc-part-header">
+                <span className="part-number">Parte 2</span>
+                <h3>Ecosistemas Multi-Agente</h3>
+                <p>Aprende a diseñar, intercomunicar y desplegar agentes de software capaces de utilizar herramientas externas.</p>
+              </div>
+              <ul className="chapter-list">
+                <li><strong>Capítulo 8:</strong> Fundamentos de Agentes de IA</li>
+                <li><strong>Capítulo 9:</strong> Arquitecturas Multi-Agente</li>
+                <li><strong>Capítulo 10:</strong> Frameworks Comparativos</li>
+                <li><strong>Capítulo 11:</strong> Memoria y Contexto</li>
+                <li><strong>Capítulo 12:</strong> Herramientas (Tools)</li>
+                <li><strong>Capítulo 13:</strong> Arquitectura de Costos</li>
+                <li><strong>Capítulo 14:</strong> Observabilidad de Agentes</li>
+                <li><strong>Capítulo 15:</strong> Evaluación Automatizada</li>
               </ul>
             </motion.div>
-            <motion.div className="toc-item" whileHover={{ scale: 1.02 }}>
-              <h3>3. Autonomía y Agentes</h3>
-              <ul>
-                <li>Tool Use y Function Calling</li>
-                <li>Despliegue de Múltiples Agentes</li>
-                <li>Vibe Coding en la Práctica</li>
+
+            {/* Parte 3 */}
+            <motion.div 
+              className="toc-part-card"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <div className="toc-part-header">
+                <span className="part-number">Parte 3</span>
+                <h3>Casos Reales y Producción</h3>
+                <p>Conecta la teoría con la práctica implementando ecosistemas seguros en servidores de producción reales.</p>
+              </div>
+              <ul className="chapter-list">
+                <li><strong>Capítulo 16:</strong> Codificación Asistida</li>
+                <li><strong>Capítulo 17:</strong> Análisis de Datos Complejos</li>
+                <li><strong>Capítulo 18:</strong> Resolución Autónoma</li>
+                <li><strong>Capítulo 19:</strong> Seguridad y Guardrails</li>
+                <li><strong>Capítulo 20:</strong> Despliegue en Producción</li>
+                <li><strong>Capítulo 21:</strong> El Futuro del Ingeniero Prompt</li>
               </ul>
             </motion.div>
+
           </div>
         </section>
 
