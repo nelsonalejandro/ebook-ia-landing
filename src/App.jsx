@@ -8,6 +8,7 @@ const VITE_AMAZON_LINK = import.meta.env.VITE_AMAZON_LINK || '#';
 function App() {
   const [email, setEmail] = useState('');
   const [success, setSuccess] = useState(false);
+  const [currentPage, setCurrentPage] = useState('home');
 
   const handleDownload = (e) => {
     e.preventDefault();
@@ -20,19 +21,57 @@ function App() {
     }
   };
 
+  if (currentPage === 'bio') {
+    return (
+      <div className="app-container">
+        <div className="bg-glow"></div>
+        <div className="bg-glow-2"></div>
+        <main className="container" style={{ padding: '2rem 0 4rem 0', minHeight: '60vh' }}>
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="glass-card" 
+            style={{ maxWidth: '900px', margin: '0 auto', padding: 0, overflow: 'hidden' }}
+          >
+            <div style={{ width: '100%', height: 'auto' }}>
+              <img 
+                src="/assets/nelson_author.png" 
+                alt="Nelson Ramos" 
+                style={{ width: '100%', height: 'auto', display: 'block' }} 
+              />
+            </div>
+            <div style={{ padding: '3.5rem', textAlign: 'left' }}>
+              <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', background: 'none', WebkitTextFillColor: 'white' }}>Nelson Ramos</h1>
+              <p style={{ color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '1.25rem', marginBottom: '2rem' }}>Autor de "Economía de la IA" y Desarrollador Full-Stack</p>
+              
+              <div style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#e2e8f0' }}>
+                <p style={{ marginBottom: '1.5rem' }}>Nací en Talca, Chile, el 28 de septiembre de 1990. Desde muy joven desarrollé una curiosidad insaciable y una gran pasión por las ciencias de la computación. Me llamaba mucho la atención aquello que no podía controlar, lo que comúnmente llamamos magia... Me titulé como Ingeniero en Ejecución Informática del I.P. Santo Tomás sede Talca en el año 2015. Tras explorar diversas áreas de la informática, en 2019 tomé la decisión definitiva de enfocarme de lleno en el desarrollo de software.</p>
+                <p style={{ marginBottom: '1.5rem' }}>Ese periodo (2019-2020) fue un verdadero punto de inflexión profesional y personal. Durante la pandemia, tomé la decisión de volver a Talca, a la casa de mis padres. Aquella mudanza forzada terminó transformándose en una etapa de reinvención total: me sumergí de lleno en la formación continua, abrazando el teletrabajo y el deporte como mi nuevo estilo de vida y comprendiendo la importancia de la salud mental y los hábitos conscientes y positivos.</p>
+                <p style={{ marginBottom: '1.5rem' }}>En el ámbito laboral, he tenido el enorme privilegio de participar en proyectos tecnológicos de gran envergadura a nivel nacional en Chile, colaborando en soluciones para la <strong>Bolsa de Comercio de Santiago</strong>, <strong>Gasconnet</strong>, <strong>RedPay</strong> y proyectos asociados a <strong>Indra</strong> y <strong>Subtel</strong>. Estas experiencias me permitieron consolidar conocimientos críticos en modularización de software, análisis profundo de sistemas y arquitectura avanzada de soluciones tecnológicas.</p>
+                <p style={{ marginBottom: '1.5rem' }}>Desde el año 2022 opero al 100% en modalidad de teletrabajo. Paralelamente, me desempeño como freelance a través de mi emprendimiento tecnológico, <strong><a href="https://www.autocreativa.com" target="_blank" rel="noreferrer" style={{ color: 'var(--accent-color)', textDecoration: 'none' }}>AutoCreativa</a></strong>. Desde allí, me dedico intensamente a crear proyectos y productos digitales de manera constante, aplicando enfoques de desarrollo modernos como el <em>vibe coding</em> y la integración de arquitecturas generativas de IA.</p>
+              </div>
+              
+              <button className="btn btn-secondary" onClick={() => setCurrentPage('home')} style={{ marginTop: '1.5rem' }}>
+                Volver a la portada
+              </button>
+            </div>
+          </motion.div>
+        </main>
+        <footer style={{ textAlign: 'center', padding: '1.5rem 0 0.5rem 0', color: 'var(--text-secondary)', fontSize: '0.9rem', borderTop: '1px solid var(--border-color)' }}>
+          <p style={{ margin: 0 }}>&copy; 2026 Nelson Ramos. Publicado independiente (Amazon KDP).</p>
+        </footer>
+      </div>
+    );
+  }
+
   return (
     <div className="app-container">
       <div className="bg-glow"></div>
       <div className="bg-glow-2"></div>
 
-      <nav style={{ padding: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ fontWeight: '800', fontSize: '1.25rem', letterSpacing: '1px' }}>
-          AUTO<span style={{ color: 'var(--accent-color)' }}>CREATIVA</span>
-        </div>
-      </nav>
-
       <main className="container">
-        <section className="hero">
+        <section className="hero" style={{ paddingTop: '2rem' }}>
           <motion.div 
             className="hero-content"
             initial={{ opacity: 0, y: 30 }}
@@ -42,8 +81,8 @@ function App() {
             <h1>Domina la Economía de la IA. Multiplica tu Productividad.</h1>
             <p>La guía radical para estructurar prompts como ingeniero, desplegar ecosistemas de agentes autónomos y recortar tus costos de API en un 70%. Disponible ahora por solo ${VITE_PRICE} USD.</p>
             
-            <div className="glass-card" style={{ marginBottom: '2.5rem' }}>
-              <h3 style={{ marginBottom: '1rem', color: '#fff', fontSize: '1.25rem' }}>Recibe el Prólogo y 1º Capítulo Gratis</h3>
+            <div className="glass-card download-card" style={{ marginBottom: '2.5rem', marginTop: '2.5rem', border: '1px solid rgba(245, 194, 17, 0.3)', background: 'rgba(20, 30, 45, 0.6)' }}>
+              <h3 style={{ marginBottom: '1rem', color: 'var(--accent-color)', fontSize: '1.4rem' }}>Recibe el 1º Capítulo Gratis</h3>
               {success ? (
                 <motion.div 
                   initial={{ opacity: 0 }} 
@@ -69,18 +108,12 @@ function App() {
                     </button>
                   </div>
                   <p style={{ fontSize: '0.85rem', margin: 0, color: 'var(--text-secondary)' }}>
-                    *Te enviaremos el PDF directamente y te avisaremos sobre recursos del libro.
+                    *Te enviaremos el PDF directamente a tu correo antes de realizar una compra
                   </p>
                 </form>
               )}
             </div>
 
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-              <a href={VITE_AMAZON_LINK} className="btn btn-secondary">
-                <ShoppingCart size={20} />
-                Comprar en Amazon (${VITE_PRICE})
-              </a>
-            </div>
           </motion.div>
 
           <motion.div 
@@ -89,72 +122,58 @@ function App() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div style={{ position: 'relative' }}>
-              <img src="/assets/book_cover.png" alt="Portada del libro de Economía de la IA y Prompt Engineering" />
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.8 }}
-                style={{ 
-                  position: 'absolute', 
-                  bottom: '-20px', 
-                  left: '-20px', 
-                  background: 'var(--card-bg)', 
-                  backdropFilter: 'blur(10px)',
-                  padding: '1.25rem', 
-                  borderRadius: '0.75rem',
-                  border: '1px solid var(--border-color)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.3)'
-                }}
-              >
-                <BookOpen size={28} color="var(--accent-color)" />
-                <div>
-                  <div style={{ fontWeight: 'bold', color: 'white' }}>21 Capítulos Completos</div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>+ Apéndices y Cheatsheets</div>
-                </div>
-              </motion.div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <img src="/assets/book_cover.png" alt="Portada del libro de Economía de la IA y Prompt Engineering" className="main-book-cover float-animation" />
             </div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              style={{ textAlign: 'center', marginTop: '2.5rem' }}
+            >
+              <h4 style={{ color: '#fff', fontSize: '1.15rem', marginBottom: '1rem', fontWeight: '500', letterSpacing: '0.5px' }}>Recibe tu copia digital en Kindle</h4>
+              <a href={VITE_AMAZON_LINK} target="_blank" rel="noreferrer" className="btn amazon-btn-animated" style={{ display: 'inline-flex' }}>
+                <ShoppingCart size={20} />
+                Comprar en Amazon (${VITE_PRICE})
+              </a>
+            </motion.div>
           </motion.div>
         </section>
 
         <section className="section" id="por-que-leer">
-          <div className="hero" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
+          <div className="pause-card-container">
             <motion.div 
-              className="glass-card hero-content"
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              className="pause-image"
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              style={{ padding: '3rem' }}
             >
-              <h2 style={{ textAlign: 'left', marginBottom: '1.5rem', fontSize: '2rem' }}>¿Por qué hacer una pausa y leer este libro?</h2>
-              <p style={{ color: 'var(--text-primary)', fontSize: '1.1rem', lineHeight: '1.8' }}>
-                Vivimos en la era de los videos rápidos y los tutoriales fragmentados, donde consumimos información a ciegas sin consolidar fundamentos reales. Este libro nació con un propósito: darte el espacio y la tranquilidad para estructurar tu conocimiento.
-              </p>
-              <p style={{ color: 'var(--text-primary)', fontSize: '1.1rem', lineHeight: '1.8' }}>
-                La diferencia entre un consumidor superficial y una ingeniera o ingeniero capaz de orquestar ecosistemas de agentes autónomos, radica en la <strong>lectura profunda</strong>. Detente, asimila y descubre cómo evitar los costosos errores del ensayo y error.
-              </p>
-              <p style={{ color: 'var(--accent-color)', fontSize: '1.15rem', fontWeight: 'bold', marginTop: '1.5rem', marginBottom: 0 }}>
-                No se trata solo de hablarle a la máquina; se trata de dominar la infraestructura del futuro.
-              </p>
+              <img 
+                src="/assets/lectora_nueva.png" 
+                onError={(e) => { e.target.onerror = null; e.target.src = "/assets/lectora.png"; }}
+                alt="Ingeniera leyendo el libro de Prompt Engineering mientras trabaja" 
+              />
             </motion.div>
 
             <motion.div 
-              className="hero-image"
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              className="pause-content"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              style={{ display: 'flex', justifyContent: 'center' }}
             >
-              <img 
-                src="/assets/lectora.png" 
-                alt="Ingeniera leyendo el libro de Prompt Engineering mientras trabaja" 
-                style={{ maxWidth: '450px', width: '100%', borderRadius: '1rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }} 
-              />
+              <h2>¿Por qué hacer una pausa y leer este libro?</h2>
+              <p>
+                Vivimos en la era de los videos rápidos y los tutoriales fragmentados, donde consumimos información a ciegas sin consolidar fundamentos reales. Este libro nació con un propósito: darte el espacio y la tranquilidad para estructurar tu conocimiento.
+              </p>
+              <p>
+                La diferencia entre un consumidor superficial y una ingeniera o ingeniero capaz de orquestar ecosistemas de agentes autónomos, radica en la <strong>lectura profunda</strong>. Detente, asimila y descubre cómo evitar los costosos errores del ensayo y error.
+              </p>
+              <p className="highlight-text">
+                No se trata solo de hablarle a la máquina; se trata de dominar la infraestructura del futuro.
+              </p>
             </motion.div>
           </div>
         </section>
@@ -242,13 +261,16 @@ function App() {
           <h2>Sobre el Autor</h2>
           <p>Nelson Ramos es Ingeniero Informático y Desarrollador Full-Stack trabajando en arquitecturas modernas con modelos fundacionales generativos.</p>
           <div className="author-links">
+            <button onClick={() => setCurrentPage('bio')} className="link-button">
+              <BookOpen size={18} style={{ marginRight: '6px' }}/> Biografía
+            </button>
             <a href="https://www.nelsonramos.cl" target="_blank" rel="noreferrer">
-              <ExternalLink size={18} style={{ marginRight: '6px' }}/> Biografía y Portfolio
+              <ExternalLink size={18} style={{ marginRight: '6px' }}/> Portfolio
             </a>
             <a href="https://www.autocreativa.com" target="_blank" rel="noreferrer">
               <ExternalLink size={18} style={{ marginRight: '6px' }}/> AutoCreativa
             </a>
-            <a href="mailto:contacto@nelsonramos.cl">
+            <a href="mailto:nelsonalejandroramosrivera@gmail.com">
               <Mail size={18} style={{ marginRight: '6px' }}/> Contacto
             </a>
           </div>
@@ -256,8 +278,8 @@ function App() {
 
       </main>
 
-      <footer style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--text-secondary)', fontSize: '0.9rem', borderTop: '1px solid var(--border-color)' }}>
-        <p>&copy; 2026 Nelson Ramos. Publicado independiente (Amazon KDP).</p>
+      <footer style={{ textAlign: 'center', padding: '1.5rem 0 0.5rem 0', color: 'var(--text-secondary)', fontSize: '0.9rem', borderTop: '1px solid var(--border-color)' }}>
+        <p style={{ margin: 0 }}>&copy; 2026 Nelson Ramos. Publicado independiente (Amazon KDP).</p>
       </footer>
     </div>
   );
