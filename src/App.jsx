@@ -120,6 +120,45 @@ function App() {
           </motion.div>
         </section>
 
+        <section className="section" id="por-que-leer">
+          <div className="hero" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
+            <motion.div 
+              className="glass-card hero-content"
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              style={{ padding: '3rem' }}
+            >
+              <h2 style={{ textAlign: 'left', marginBottom: '1.5rem', fontSize: '2rem' }}>¿Por qué hacer una pausa y leer este libro?</h2>
+              <p style={{ color: 'var(--text-primary)', fontSize: '1.1rem', lineHeight: '1.8' }}>
+                Vivimos en la era de los videos rápidos y los tutoriales fragmentados, donde consumimos información a ciegas sin consolidar fundamentos reales. Este libro nació con un propósito: darte el espacio y la tranquilidad para estructurar tu conocimiento.
+              </p>
+              <p style={{ color: 'var(--text-primary)', fontSize: '1.1rem', lineHeight: '1.8' }}>
+                La diferencia entre un consumidor superficial y una ingeniera o ingeniero capaz de orquestar ecosistemas de agentes autónomos, radica en la <strong>lectura profunda</strong>. Detente, asimila y descubre cómo evitar los costosos errores del ensayo y error.
+              </p>
+              <p style={{ color: 'var(--accent-color)', fontSize: '1.15rem', fontWeight: 'bold', marginTop: '1.5rem', marginBottom: 0 }}>
+                No se trata solo de hablarle a la máquina; se trata de dominar la infraestructura del futuro.
+              </p>
+            </motion.div>
+
+            <motion.div 
+              className="hero-image"
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              style={{ display: 'flex', justifyContent: 'center' }}
+            >
+              <img 
+                src="/assets/book_cover.png" 
+                alt="Portada del libro de Economía de la IA y Prompt Engineering" 
+                style={{ maxWidth: '400px', width: '100%', borderRadius: '1rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }} 
+              />
+            </motion.div>
+          </div>
+        </section>
+
         <section className="section" id="contenido">
           <h2>Tabla de Contenido Principal</h2>
           <div className="toc-grid">
