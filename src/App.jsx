@@ -4,10 +4,7 @@ import { ArrowLeft, BookOpen, Download, ShoppingCart, CheckCircle, ExternalLink,
 
 const VITE_PRICE        = import.meta.env.VITE_PRICE        || '9.99';
 const VITE_AMAZON_LINK  = import.meta.env.VITE_AMAZON_LINK  || '#';
-const VITE_EMAIL_HOST   = import.meta.env.VITE_EMAIL_HOST   || '';
-const VITE_EMAIL_PORT   = import.meta.env.VITE_EMAIL_PORT   || '587';
-const VITE_EMAIL_USER   = import.meta.env.VITE_EMAIL_USER   || '';
-const VITE_EMAIL_PASS   = import.meta.env.VITE_EMAIL_PASS   || '';
+
 
 /* ─── Glitch Game Modal ───────────────────────────────────── */
 const GAME_DURATION = 10;
@@ -164,90 +161,15 @@ const SOCIAL_LINKS = [
   { label: 'contacto@nelsonramos.cl', href: 'mailto:contacto@nelsonramos.cl',           icon: Mail        },
 ];
 
-/* ─── Helpers ────────────────────────────────────────────────── */
-
-/** Fetch a local resource and return its base64-encoded content */
-async function fetchAsBase64(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`No se pudo obtener ${url}`);
-  const buf = await res.arrayBuffer();
-  let binary = '';
-  const bytes = new Uint8Array(buf);
-  for (let i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
-}
-
-/** Fetch the HTML template and inject dynamic values */
-async function buildEmailBody(amazonLink) {
-  const res = await fetch('/email_template.html');
-  let html = await res.text();
-  html = html.replace(/\{\{AMAZON_LINK\}\}/g, amazonLink);
-  html = html.replace(/\{\{UNSUBSCRIBE_LINK\}\}/g, '#');
-  return html;
-}
-
-/** Dynamically load SMTP.js CDN script only when needed */
-function loadSmtpJs() {
-  return new Promise((resolve, reject) => {
-    // Already loaded
-    if (window.Email && typeof window.Email.send === 'function') {
-      return resolve(window.Email);
-    }
-    // Avoid injecting twice
-    if (document.getElementById('smtpjs-cdn')) {
-      // Wait for it to finish loading
-      const wait = setInterval(() => {
-        if (window.Email && typeof window.Email.send === 'function') {
-          clearInterval(wait);
-          resolve(window.Email);
-        }
-      }, 100);
-      setTimeout(() => { clearInterval(wait); reject(new Error('timeout')); }, 8000);
-      return;
-    }
-    const script = document.createElement('script');
-    script.id  = 'smtpjs-cdn';
-    script.src = 'https://smtpjs.com/v3/smtp.js';
-    script.onload  = () => resolve(window.Email);
-    script.onerror = () => reject(new Error('cdn_load_failed'));
-    document.head.appendChild(script);
-    setTimeout(() => reject(new Error('timeout')), 8000);
+/* ─── Email via backend (nodemailer) ───────────────────── */
+async function sendEmail(email) {
+  const res = await fetch('/api/send-email', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ email }),
   });
-}
-
-/** Send email with PDF attachment via SMTP.js */
-async function sendViaSmtp({ toEmail }) {
-  // Load HTML template and PDF in parallel while also loading the SDK
-  const [htmlBody, pdfBase64, Email] = await Promise.all([
-    buildEmailBody(VITE_AMAZON_LINK),
-    fetchAsBase64('/assets/primer_capitulo_gratis.pdf'),
-    loadSmtpJs(),
-  ]);
-
-  if (!Email || typeof Email.send !== 'function') {
-    throw new Error('El servicio de email no está disponible. Intenta de nuevo.');
-  }
-
-  const result = await Email.send({
-    Host:       VITE_EMAIL_HOST,
-    Port:       parseInt(VITE_EMAIL_PORT, 10),
-    Username:   VITE_EMAIL_USER,
-    Password:   VITE_EMAIL_PASS,
-    To:         toEmail,
-    From:       `Nelson Ramos <${VITE_EMAIL_USER}>`,
-    Subject:    '📘 Tu primer capítulo gratis — Prompt Engineering para Ingenieros',
-    Body:       htmlBody,
-    Attachments: [
-      {
-        name: 'primer_capitulo_gratis.pdf',
-        data: `data:application/pdf;base64,${pdfBase64}`,
-      },
-    ],
-  });
-
-  if (result !== 'OK') throw new Error(result);
+  const data = await res.json();
+  if (!res.ok || !data.ok) throw new Error(data.error || 'Error enviando email');
 }
 
 /* ─── Bio page ───────────────────────────────────────────────── */
@@ -337,11 +259,12 @@ function App() {
     setError('');
 
     try {
-      await sendViaSmtp({ toEmail: email });
+      await sendEmail(email);
       setSuccess(true);
     } catch (err) {
-      console.error('SMTP send error:', err);
+      console.error('Email error:', err);
       setError('No pudimos enviar el correo. Por favor intenta nuevamente o escríbenos a contacto@nelsonramos.cl');
+
     } finally {
       setLoading(false);
     }
