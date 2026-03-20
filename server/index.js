@@ -74,7 +74,7 @@ app.post('/api/send-email', async (req, res) => {
 
 /* ─── Fallback: sirve index.html para rutas del SPA ─────── */
 if (fs.existsSync(DIST_PATH)) {
-  app.get('*', (req, res) => {
+  app.get('/{*path}', (req, res) => {
     res.sendFile(path.join(DIST_PATH, 'index.html'));
   });
 }
