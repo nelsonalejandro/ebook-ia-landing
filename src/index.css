@@ -51,9 +51,9 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* Background Gradients */
+/* Background Gradients — fixed so they don't affect document height */
 .bg-glow {
-  position: absolute;
+  position: fixed;
   top: -10vw;
   right: -10vw;
   width: 700px;
@@ -61,17 +61,19 @@ body {
   background: radial-gradient(circle, var(--accent-glow) 0%, rgba(15, 23, 42, 0) 70%);
   z-index: -1;
   filter: blur(80px);
+  pointer-events: none;
   animation: floatGlow 25s ease-in-out infinite alternate;
 }
 .bg-glow-2 {
-  position: absolute;
-  bottom: -40vw;
-  left: -20vw;
+  position: fixed;
+  bottom: -10vw;
+  left: -10vw;
   width: 900px;
   height: 900px;
   background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, rgba(15, 23, 42, 0) 70%);
   z-index: -1;
   filter: blur(100px);
+  pointer-events: none;
   animation: floatGlowReverse 30s ease-in-out infinite alternate;
 }
 
