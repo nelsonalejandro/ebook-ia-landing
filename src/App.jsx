@@ -188,16 +188,49 @@ async function buildEmailBody(amazonLink) {
   return html;
 }
 
+/** Dynamically load SMTP.js CDN script only when needed */
+function loadSmtpJs() {
+  return new Promise((resolve, reject) => {
+    // Already loaded
+    if (window.Email && typeof window.Email.send === 'function') {
+      return resolve(window.Email);
+    }
+    // Avoid injecting twice
+    if (document.getElementById('smtpjs-cdn')) {
+      // Wait for it to finish loading
+      const wait = setInterval(() => {
+        if (window.Email && typeof window.Email.send === 'function') {
+          clearInterval(wait);
+          resolve(window.Email);
+        }
+      }, 100);
+      setTimeout(() => { clearInterval(wait); reject(new Error('timeout')); }, 8000);
+      return;
+    }
+    const script = document.createElement('script');
+    script.id  = 'smtpjs-cdn';
+    script.src = 'https://smtpjs.com/v3/smtp.js';
+    script.onload  = () => resolve(window.Email);
+    script.onerror = () => reject(new Error('cdn_load_failed'));
+    document.head.appendChild(script);
+    setTimeout(() => reject(new Error('timeout')), 8000);
+  });
+}
+
 /** Send email with PDF attachment via SMTP.js */
 async function sendViaSmtp({ toEmail }) {
-  // Load HTML template and PDF in parallel
-  const [htmlBody, pdfBase64] = await Promise.all([
+  // Load HTML template and PDF in parallel while also loading the SDK
+  const [htmlBody, pdfBase64, Email] = await Promise.all([
     buildEmailBody(VITE_AMAZON_LINK),
     fetchAsBase64('/assets/primer_capitulo_gratis.pdf'),
+    loadSmtpJs(),
   ]);
 
-  // window.Email is loaded via the smtpjs.com CDN script in index.html
-  const result = await window.Email.send({
+  if (!Email || typeof Email.send !== 'function') {
+    throw new Error('El servicio de email no está disponible. Intenta de nuevo.');
+  }
+
+  const result = await Email.send({
     Host:       VITE_EMAIL_HOST,
     Port:       parseInt(VITE_EMAIL_PORT, 10),
     Username:   VITE_EMAIL_USER,
