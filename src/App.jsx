@@ -1,68 +1,133 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, Download, ShoppingCart, CheckCircle, ExternalLink, Mail } from 'lucide-react';
+import emailjs from '@emailjs/browser';
+import { ArrowLeft, BookOpen, Download, ShoppingCart, CheckCircle, ExternalLink, Mail, Loader, Globe, Linkedin, Github } from 'lucide-react';
 
 const VITE_PRICE = import.meta.env.VITE_PRICE || '9.99';
 const VITE_AMAZON_LINK = import.meta.env.VITE_AMAZON_LINK || '#';
+const VITE_EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
+const VITE_EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
+const VITE_EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
+const VITE_PDF_URL = import.meta.env.VITE_PDF_URL || '/assets/primer_capitulo_gratis.pdf';
+
+const SOCIAL_LINKS = [
+  { label: 'Portafolio', href: 'https://www.nelsonramos.cl', icon: Globe },
+  { label: 'AutoCreativa', href: 'https://www.autocreativa.com', icon: ExternalLink },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/nelsonalejandroramos/', icon: Linkedin },
+  { label: 'GitHub', href: 'https://github.com/nelsonalejandro', icon: Github },
+  { label: 'contacto@nelsonramos.cl', href: 'mailto:contacto@nelsonramos.cl', icon: Mail },
+];
+
+function BiographyPage({ onBack }) {
+  return (
+    <div className="bio-page app-container">
+      <div className="bg-glow"></div>
+      <div className="bg-glow-2"></div>
+
+      <main className="container">
+        <div className="bio-layout">
+          {/* Image column with overlay */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55 }}
+            className="bio-hero-image-wrap"
+          >
+            <img src="/assets/nelson_author.png" alt="Nelson Ramos" />
+
+            <div className="bio-image-overlay">
+              <button className="bio-back-btn" onClick={onBack}>
+                <ArrowLeft size={16} />
+                Volver
+              </button>
+              <p className="bio-overlay-subtitle">Volver al inicio de la landing</p>
+              <div className="bio-social-links">
+                {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => (
+                  <a
+                    key={href}
+                    href={href}
+                    target={href.startsWith('mailto') ? undefined : '_blank'}
+                    rel="noreferrer"
+                    className="bio-social-link"
+                  >
+                    <Icon size={12} />
+                    {label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Text column */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.12 }}
+            className="bio-text-content"
+          >
+            <h1>Nelson Ramos</h1>
+            <p className="bio-role">Ingeniero Informático · Desarrollador Full-Stack · Autor</p>
+
+            <p>Nací en Talca, Chile, el 28 de septiembre de 1990. Desde muy joven desarrollé una curiosidad insaciable por las ciencias de la computación, enraizada desde mis primeros contactos con videoconsolas hacia el año 1998. Me titulé como Ingeniero en Ejecución Informática del I.P. Santo Tomás sede Talca en el año 2015 y, tras explorar diversas áreas de la informática, en 2019 tomé la decisión definitiva de enfocarme de lleno en el desarrollo de software.</p>
+
+            <p>El periodo 2019-2020 fue un verdadero punto de inflexión. Viví el estallido social a pasos del metro, luego la pandemia mundial cambió todo radicalmente. Tomé la decisión de volver a Talca, donde aquella mudanza forzada se transformó en una etapa de reinvención total: formación continua, teletrabajo, deporte y hábitos conscientes. Un cambio de <em>mindset</em> que me otorgó una vida más plena y profesional.</p>
+
+            <p>En el ámbito laboral, participé en proyectos tecnológicos de gran envergadura: <strong>Bolsa de Comercio de Santiago</strong>, <strong>Gasconnet</strong>, <strong>RedPay</strong> y proyectos asociados a <strong>Indra</strong> y <strong>Subtel</strong>. Desde 2022 opero al 100% en teletrabajo a través de mi emprendimiento <strong>AutoCreativa</strong>, donde desarrollo productos digitales aplicando enfoques modernos como el <em>vibe coding</em> y arquitecturas generativas de IA.</p>
+
+            <p>Este libro nació de esas notas que tomé aquella noche mirando una factura de AWS de $890 USD. Lo escribí para que otros ingenieros de Chile y Latinoamérica no repitan los mismos errores que cometí.</p>
+          </motion.div>
+        </div>
+      </main>
+
+      <footer className="site-footer">
+        <p>&copy; 2026 Nelson Ramos. Publicado independiente (Amazon KDP).</p>
+      </footer>
+    </div>
+  );
+}
 
 function App() {
   const [email, setEmail] = useState('');
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState('home');
 
-  const handleDownload = (e) => {
+  const handleDownload = async (e) => {
     e.preventDefault();
-    if (email) {
+    if (!email) return;
+
+    setLoading(true);
+    setError('');
+
+    const triggerDownload = () => {
+      window.open(VITE_PDF_URL, '_blank');
+    };
+
+    try {
+      await emailjs.send(
+        VITE_EMAILJS_SERVICE_ID,
+        VITE_EMAILJS_TEMPLATE_ID,
+        {
+          to_email: email,
+          pdf_url: VITE_PDF_URL,
+          amazon_link: VITE_AMAZON_LINK,
+        },
+        VITE_EMAILJS_PUBLIC_KEY
+      );
       setSuccess(true);
-      // Simulating email send and direct download for UX
-      setTimeout(() => {
-        window.open('/assets/primer_capitulo_gratis.pdf', '_blank');
-      }, 1000);
+      triggerDownload();
+    } catch (err) {
+      console.error('EmailJS error:', err);
+      setError('No pudimos enviar el correo, pero aquí tienes tu descarga directa.');
+      triggerDownload();
+    } finally {
+      setLoading(false);
     }
   };
 
   if (currentPage === 'bio') {
-    return (
-      <div className="app-container">
-        <div className="bg-glow"></div>
-        <div className="bg-glow-2"></div>
-        <main className="container" style={{ padding: '2rem 0 4rem 0', minHeight: '60vh' }}>
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="glass-card" 
-            style={{ maxWidth: '900px', margin: '0 auto', padding: 0, overflow: 'hidden' }}
-          >
-            <div style={{ width: '100%', height: 'auto' }}>
-              <img 
-                src="/assets/nelson_author.png" 
-                alt="Nelson Ramos" 
-                style={{ width: '100%', height: 'auto', display: 'block' }} 
-              />
-            </div>
-            <div style={{ padding: '3.5rem', textAlign: 'left' }}>
-              <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', background: 'none', WebkitTextFillColor: 'white' }}>Nelson Ramos</h1>
-              <p style={{ color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '1.25rem', marginBottom: '2rem' }}>Autor de "Economía de la IA" y Desarrollador Full-Stack</p>
-              
-              <div style={{ fontSize: '1.1rem', lineHeight: '1.8', color: '#e2e8f0' }}>
-                <p style={{ marginBottom: '1.5rem' }}>Nací en Talca, Chile, el 28 de septiembre de 1990. Desde muy joven desarrollé una curiosidad insaciable y una gran pasión por las ciencias de la computación. Me llamaba mucho la atención aquello que no podía controlar, lo que comúnmente llamamos magia... Me titulé como Ingeniero en Ejecución Informática del I.P. Santo Tomás sede Talca en el año 2015. Tras explorar diversas áreas de la informática, en 2019 tomé la decisión definitiva de enfocarme de lleno en el desarrollo de software.</p>
-                <p style={{ marginBottom: '1.5rem' }}>Ese periodo (2019-2020) fue un verdadero punto de inflexión profesional y personal. Durante la pandemia, tomé la decisión de volver a Talca, a la casa de mis padres. Aquella mudanza forzada terminó transformándose en una etapa de reinvención total: me sumergí de lleno en la formación continua, abrazando el teletrabajo y el deporte como mi nuevo estilo de vida y comprendiendo la importancia de la salud mental y los hábitos conscientes y positivos.</p>
-                <p style={{ marginBottom: '1.5rem' }}>En el ámbito laboral, he tenido el enorme privilegio de participar en proyectos tecnológicos de gran envergadura a nivel nacional en Chile, colaborando en soluciones para la <strong>Bolsa de Comercio de Santiago</strong>, <strong>Gasconnet</strong>, <strong>RedPay</strong> y proyectos asociados a <strong>Indra</strong> y <strong>Subtel</strong>. Estas experiencias me permitieron consolidar conocimientos críticos en modularización de software, análisis profundo de sistemas y arquitectura avanzada de soluciones tecnológicas.</p>
-                <p style={{ marginBottom: '1.5rem' }}>Desde el año 2022 opero al 100% en modalidad de teletrabajo. Paralelamente, me desempeño como freelance a través de mi emprendimiento tecnológico, <strong><a href="https://www.autocreativa.com" target="_blank" rel="noreferrer" style={{ color: 'var(--accent-color)', textDecoration: 'none' }}>AutoCreativa</a></strong>. Desde allí, me dedico intensamente a crear proyectos y productos digitales de manera constante, aplicando enfoques de desarrollo modernos como el <em>vibe coding</em> y la integración de arquitecturas generativas de IA.</p>
-              </div>
-              
-              <button className="btn btn-secondary" onClick={() => setCurrentPage('home')} style={{ marginTop: '1.5rem' }}>
-                Volver a la portada
-              </button>
-            </div>
-          </motion.div>
-        </main>
-        <footer style={{ textAlign: 'center', padding: '1.5rem 0 0.5rem 0', color: 'var(--text-secondary)', fontSize: '0.9rem', borderTop: '1px solid var(--border-color)' }}>
-          <p style={{ margin: 0 }}>&copy; 2026 Nelson Ramos. Publicado independiente (Amazon KDP).</p>
-        </footer>
-      </div>
-    );
+    return <BiographyPage onBack={() => setCurrentPage('home')} />;
   }
 
   return (
@@ -71,7 +136,7 @@ function App() {
       <div className="bg-glow-2"></div>
 
       <main className="container">
-        <section className="hero" style={{ paddingTop: '2rem' }}>
+        <section className="hero">
           <motion.div 
             className="hero-content"
             initial={{ opacity: 0, y: 30 }}
@@ -101,19 +166,37 @@ function App() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      disabled={loading}
                     />
-                    <button type="submit" className="btn btn-primary">
-                      <Download size={20} />
-                      Envíame el Capítulo
+                    <button type="submit" className="btn btn-primary" disabled={loading}>
+                      {loading ? (
+                        <>
+                          <Loader size={20} style={{ animation: 'spin 1s linear infinite' }} />
+                          Enviando...
+                        </>
+                      ) : (
+                        <>
+                          <Download size={20} />
+                          Envíame el Capítulo
+                        </>
+                      )}
                     </button>
                   </div>
-                  <p style={{ fontSize: '0.85rem', margin: 0, color: 'var(--text-secondary)' }}>
+                  {error && (
+                    <motion.p 
+                      initial={{ opacity: 0 }} 
+                      animate={{ opacity: 1 }}
+                      style={{ fontSize: '0.85rem', margin: '0.5rem 0 0 0', color: '#f59e0b' }}
+                    >
+                      {error}
+                    </motion.p>
+                  )}
+                  <p style={{ fontSize: '0.85rem', margin: '0.5rem 0 0 0', color: 'var(--text-secondary)' }}>
                     *Te enviaremos el PDF directamente a tu correo antes de realizar una compra
                   </p>
                 </form>
               )}
             </div>
-
           </motion.div>
 
           <motion.div 
@@ -182,7 +265,6 @@ function App() {
           <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem' }}>Tabla de Contenido Oficial</h2>
           <div className="toc-elaborate-grid">
             
-            {/* Parte 1 */}
             <motion.div 
               className="toc-part-card"
               initial={{ opacity: 0, y: 30 }}
@@ -206,7 +288,6 @@ function App() {
               </ul>
             </motion.div>
 
-            {/* Parte 2 */}
             <motion.div 
               className="toc-part-card"
               initial={{ opacity: 0, y: 30 }}
@@ -231,7 +312,6 @@ function App() {
               </ul>
             </motion.div>
 
-            {/* Parte 3 */}
             <motion.div 
               className="toc-part-card"
               initial={{ opacity: 0, y: 30 }}
@@ -265,12 +345,12 @@ function App() {
               <BookOpen size={18} style={{ marginRight: '6px' }}/> Biografía
             </button>
             <a href="https://www.nelsonramos.cl" target="_blank" rel="noreferrer">
-              <ExternalLink size={18} style={{ marginRight: '6px' }}/> Portfolio
+              <ExternalLink size={18} style={{ marginRight: '6px' }}/> Portafolio
             </a>
             <a href="https://www.autocreativa.com" target="_blank" rel="noreferrer">
               <ExternalLink size={18} style={{ marginRight: '6px' }}/> AutoCreativa
             </a>
-            <a href="mailto:nelsonalejandroramosrivera@gmail.com">
+            <a href="mailto:contacto@nelsonramos.cl">
               <Mail size={18} style={{ marginRight: '6px' }}/> Contacto
             </a>
           </div>
@@ -278,8 +358,8 @@ function App() {
 
       </main>
 
-      <footer style={{ textAlign: 'center', padding: '1.5rem 0 0.5rem 0', color: 'var(--text-secondary)', fontSize: '0.9rem', borderTop: '1px solid var(--border-color)' }}>
-        <p style={{ margin: 0 }}>&copy; 2026 Nelson Ramos. Publicado independiente (Amazon KDP).</p>
+      <footer className="site-footer">
+        <p>&copy; 2026 Nelson Ramos. Publicado independiente (Amazon KDP).</p>
       </footer>
     </div>
   );
