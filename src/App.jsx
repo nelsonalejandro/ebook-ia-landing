@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, BookOpen, Download, ShoppingCart, CheckCircle, ExternalLink, Mail, Loader, Globe, Linkedin, Github } from 'lucide-react';
 
@@ -8,6 +8,142 @@ const VITE_EMAIL_HOST   = import.meta.env.VITE_EMAIL_HOST   || '';
 const VITE_EMAIL_PORT   = import.meta.env.VITE_EMAIL_PORT   || '587';
 const VITE_EMAIL_USER   = import.meta.env.VITE_EMAIL_USER   || '';
 const VITE_EMAIL_PASS   = import.meta.env.VITE_EMAIL_PASS   || '';
+
+/* ─── Glitch Game Modal ───────────────────────────────────── */
+const GAME_DURATION = 10;
+
+function getRank(clicks) {
+  if (clicks >= 120) return { label: '\u26a1 GLITCH MASTER', color: '#F5C211' };
+  if (clicks >= 80)  return { label: '\ud83d\udd25 OVERCLOCKER',  color: '#ff7c3a' };
+  if (clicks >= 50)  return { label: '\ud83d\udcbb INGENIERO',    color: '#4ade80' };
+  if (clicks >= 25)  return { label: '\ud83d\udc4d HUMANO',       color: '#94a3b8' };
+  return               { label: '\ud83d\udc0c TORTUGA',          color: '#64748b' };
+}
+
+function GlitchGame({ onClose }) {
+  const [phase, setPhase]   = useState('idle');    // idle | countdown | playing | result
+  const [count, setCount]   = useState(3);
+  const [clicks, setClicks] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(GAME_DURATION);
+  const intervalRef = useRef(null);
+  const gameRef     = useRef(null);
+
+  // Prevent body scroll
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  // Focus the tap area when playing
+  useEffect(() => {
+    if (phase === 'playing' && gameRef.current) gameRef.current.focus();
+  }, [phase]);
+
+  const startCountdown = useCallback(() => {
+    setPhase('countdown');
+    setCount(3);
+    setClicks(0);
+    setTimeLeft(GAME_DURATION);
+    let c = 3;
+    intervalRef.current = setInterval(() => {
+      c -= 1;
+      setCount(c);
+      if (c <= 0) {
+        clearInterval(intervalRef.current);
+        startGame();
+      }
+    }, 1000);
+  }, []);
+
+  const startGame = useCallback(() => {
+    setPhase('playing');
+    let t = GAME_DURATION;
+    intervalRef.current = setInterval(() => {
+      t -= 1;
+      setTimeLeft(t);
+      if (t <= 0) {
+        clearInterval(intervalRef.current);
+        setPhase('result');
+      }
+    }, 1000);
+  }, []);
+
+  useEffect(() => () => clearInterval(intervalRef.current), []);
+
+  const handleTap = useCallback(() => {
+    if (phase === 'playing') setClicks(c => c + 1);
+  }, [phase]);
+
+  const cps   = (clicks / GAME_DURATION).toFixed(1);
+  const rank  = getRank(clicks);
+  const prog  = ((GAME_DURATION - timeLeft) / GAME_DURATION) * 100;
+
+  return (
+    <div className="glitch-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="glitch-modal">
+        <button className="glitch-close" onClick={onClose} aria-label="Cerrar">×</button>
+
+        {/* IDLE */}
+        {phase === 'idle' && (
+          <>
+            <p className="glitch-tag">// easter_egg.exe</p>
+            <h2 className="glitch-title" data-text="GLITCH TAP">
+              GLITCH<br/>TAP
+            </h2>
+            <p className="glitch-desc">
+              {GAME_DURATION} segundos.<br/>Haz click lo más rápido que puedas.
+            </p>
+            <button className="glitch-btn" onClick={startCountdown}>[ INICIAR ]</button>
+          </>
+        )}
+
+        {/* COUNTDOWN */}
+        {phase === 'countdown' && (
+          <>
+            <p className="glitch-tag">// iniciando_en...</p>
+            <div className="glitch-countdown">{count === 0 ? '\u00a1YA!' : count}</div>
+          </>
+        )}
+
+        {/* PLAYING */}
+        {phase === 'playing' && (
+          <>
+            <div className="glitch-hud">
+              <span className="glitch-tag">{timeLeft}s</span>
+              <span className="glitch-tag" style={{ color: '#F5C211' }}>{clicks} TAP</span>
+            </div>
+            <div className="glitch-progress-bar">
+              <div className="glitch-progress-fill" style={{ width: `${prog}%` }} />
+            </div>
+            <button
+              ref={gameRef}
+              className="glitch-tap-zone"
+              onClick={handleTap}
+              onKeyDown={(e) => e.code === 'Space' && handleTap()}
+            >
+              <span>TAP</span>
+            </button>
+          </>
+        )}
+
+        {/* RESULT */}
+        {phase === 'result' && (
+          <>
+            <p className="glitch-tag">// resultado</p>
+            <div className="glitch-result-score">{clicks}</div>
+            <p style={{ color: '#94a3b8', margin: '0 0 0.25rem', fontSize: '0.9rem' }}>clicks en {GAME_DURATION}s — {cps} cps</p>
+            <p className="glitch-rank" style={{ color: rank.color }}>{rank.label}</p>
+            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button className="glitch-btn" onClick={startCountdown}>[ RETRY ]</button>
+              <button className="glitch-btn" style={{ background: 'transparent', color: '#94a3b8', border: '1px solid #94a3b833' }} onClick={onClose}>[ SALIR ]</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 
 const SOCIAL_LINKS = [
   { label: 'Portafolio',              href: 'https://www.nelsonramos.cl',               icon: Globe       },
@@ -72,7 +208,7 @@ async function sendViaSmtp({ toEmail }) {
 
 /* ─── Bio page ───────────────────────────────────────────────── */
 
-function BiographyPage({ onBack }) {
+function BiographyPage({ onBack, onOpenGame }) {
   return (
     <div className="bio-page app-container">
       <div className="bg-glow"></div>
@@ -133,7 +269,7 @@ function BiographyPage({ onBack }) {
       </main>
 
       <footer className="site-footer">
-        <p>&copy; 2026 Nelson Ramos. Publicado independiente (Amazon KDP).</p>
+        <p>Hecho con ⚡ y demasiado café &mdash; <button className="glitch-footer-link" onClick={() => onOpenGame()}>GL1TCH</button></p>
       </footer>
     </div>
   );
@@ -147,6 +283,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
   const [currentPage, setCurrentPage] = useState('home');
+  const [showGame, setShowGame]       = useState(false);
 
   const handleDownload = async (e) => {
     e.preventDefault();
@@ -167,10 +304,12 @@ function App() {
   };
 
   if (currentPage === 'bio') {
-    return <BiographyPage onBack={() => setCurrentPage('home')} />;
+    return <BiographyPage onBack={() => setCurrentPage('home')} onOpenGame={() => setShowGame(true)} />;
   }
 
+
   return (
+    <>
     <div className="app-container">
       <div className="bg-glow"></div>
       <div className="bg-glow-2"></div>
@@ -379,9 +518,12 @@ function App() {
       </main>
 
       <footer className="site-footer">
-        <p>&copy; 2026 Nelson Ramos. Publicado independiente (Amazon KDP).</p>
+        <p>Hecho con ⚡ y demasiado café &mdash; <button className="glitch-footer-link" onClick={() => setShowGame(true)}>GL1TCH</button></p>
       </footer>
     </div>
+
+    {showGame && <GlitchGame onClose={() => setShowGame(false)} />}
+    </>
   );
 }
 
