@@ -10,59 +10,104 @@
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
+    background-color: #f9f9f9;
+  }
+  .wrapper {
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   }
   .header {
+    background: linear-gradient(135deg, #061820 0%, #0b303c 100%);
+    padding: 32px 28px 24px;
     text-align: center;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #eeeeee;
+    border-bottom: 3px solid #F5C211;
+  }
+  .header h1 {
+    color: #F5C211;
+    margin: 0 0 6px 0;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .header p {
+    color: rgba(255,255,255,0.65);
+    margin: 0;
+    font-size: 13px;
   }
   .content {
-    padding: 20px 0;
+    padding: 28px 28px 20px;
+  }
+  .content p {
+    margin: 0 0 16px 0;
+    font-size: 15px;
+    color: #444;
+  }
+  .highlight-box {
+    background: #fffbea;
+    border-left: 4px solid #F5C211;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 20px 0;
+    font-size: 14px;
+    color: #555;
+  }
+  .cta-section {
+    text-align: center;
+    padding: 20px 0 8px;
   }
   .button {
     display: inline-block;
-    padding: 12px 24px;
-    background-color: #0066cc;
-    color: #ffffff !important;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, #F5C211, #D4A70D);
+    color: #000000 !important;
     text-decoration: none;
     border-radius: 6px;
-    font-weight: bold;
-    margin: 20px 0;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.2px;
   }
   .footer {
     font-size: 12px;
-    color: #888888;
+    color: #aaaaaa;
     text-align: center;
-    padding-top: 20px;
+    padding: 16px 28px;
     border-top: 1px solid #eeeeee;
+    background: #fafafa;
+  }
+  .footer a {
+    color: #aaa;
   }
 </style>
 </head>
 <body>
-  <div class="header">
-    <h1>Prompt Engineering para Ingenieros</h1>
-  </div>
-  <div class="content">
-    <p>Hola,</p>
-    <p>Gracias por tu interés en <strong>Prompt Engineering para Ingenieros</strong>. Como lo prometimos, aquí tienes acceso directo al primer capítulo y al prólogo del libro.</p>
-    
-    <p>En este fragmento, descubrirás <em>El Costo Oculto de "Solo Usar ChatGPT"</em>. Y aprenderás en 15 minutos cómo evitar que un proyecto de IA devore el presupuesto de tu equipo simplemente entendiendo la economía de los tokens.</p>
-    
-    <p>Puedes descargar el PDF seguro directamente desde aquí:</p>
-    
-    <div style="text-align: center;">
-      <a href="{{PDF_URL}}" class="button">Descargar Primer Capítulo (PDF)</a>
+  <div class="wrapper">
+    <div class="header">
+      <h1>Prompt Engineering para Ingenieros</h1>
+      <p>Nelson Ramos · AutoCreativa · Marzo 2026</p>
     </div>
+    <div class="content">
+      <p>Hola,</p>
+      <p>Gracias por tu interés en <strong>Prompt Engineering para Ingenieros</strong>. Como lo prometimos, <strong>el primer capítulo del libro va adjunto a este email</strong>, listo para leer.</p>
 
-    <p>Si encuentras valor en estas páginas y quieres dominar la estructuración de llamadas al LLM, la creación de sistemas RAG avanzados y el despliegue de agentes en producción,</p>
-    
-    <p><strong><a href="{{AMAZON_LINK}}">El libro completo ya está disponible en Amazon por solo $9.99 USD.</a></strong></p>
-    
-    <p>Un abrazo,<br>Nelson Ramos</p>
-  </div>
-  <div class="footer">
-    <p>Si no solicitaste este recurso, puedes ignorar este correo.</p>
-    <p><a href="{{UNSUBSCRIBE_LINK}}">Darte de baja</a></p>
+      <div class="highlight-box">
+        📎 <strong>Adjunto:</strong> primer_capitulo_gratis.pdf<br>
+        Capítulo 1: <em>"El Costo Oculto de Solo Usar ChatGPT"</em> — aprende a auditar y optimizar tus costos de API en 15 minutos.
+      </div>
+
+      <p>Si este capítulo te resulta valioso y quieres dominar la estructuración de llamadas al LLM, la creación de sistemas RAG avanzados y el despliegue de agentes en producción:</p>
+
+      <div class="cta-section">
+        <a href="{{AMAZON_LINK}}" class="button">Ver libro completo en Amazon — $9.99 USD</a>
+      </div>
+
+      <p>Un abrazo,<br><strong>Nelson Ramos</strong></p>
+    </div>
+    <div class="footer">
+      <p>Si no solicitaste este recurso, puedes ignorar este correo.</p>
+      <p><a href="https://www.nelsonramos.cl">www.nelsonramos.cl</a> · <a href="https://www.autocreativa.com">autocreativa.com</a></p>
+    </div>
   </div>
 </body>
 </html>

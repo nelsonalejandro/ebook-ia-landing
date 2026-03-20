@@ -1,22 +1,76 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import emailjs from '@emailjs/browser';
 import { ArrowLeft, BookOpen, Download, ShoppingCart, CheckCircle, ExternalLink, Mail, Loader, Globe, Linkedin, Github } from 'lucide-react';
 
-const VITE_PRICE = import.meta.env.VITE_PRICE || '9.99';
-const VITE_AMAZON_LINK = import.meta.env.VITE_AMAZON_LINK || '#';
-const VITE_EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
-const VITE_EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
-const VITE_EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
-const VITE_PDF_URL = import.meta.env.VITE_PDF_URL || '/assets/primer_capitulo_gratis.pdf';
+const VITE_PRICE        = import.meta.env.VITE_PRICE        || '9.99';
+const VITE_AMAZON_LINK  = import.meta.env.VITE_AMAZON_LINK  || '#';
+const VITE_EMAIL_HOST   = import.meta.env.VITE_EMAIL_HOST   || '';
+const VITE_EMAIL_PORT   = import.meta.env.VITE_EMAIL_PORT   || '587';
+const VITE_EMAIL_USER   = import.meta.env.VITE_EMAIL_USER   || '';
+const VITE_EMAIL_PASS   = import.meta.env.VITE_EMAIL_PASS   || '';
 
 const SOCIAL_LINKS = [
-  { label: 'Portafolio', href: 'https://www.nelsonramos.cl', icon: Globe },
-  { label: 'AutoCreativa', href: 'https://www.autocreativa.com', icon: ExternalLink },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/nelsonalejandroramos/', icon: Linkedin },
-  { label: 'GitHub', href: 'https://github.com/nelsonalejandro', icon: Github },
-  { label: 'contacto@nelsonramos.cl', href: 'mailto:contacto@nelsonramos.cl', icon: Mail },
+  { label: 'Portafolio',              href: 'https://www.nelsonramos.cl',               icon: Globe       },
+  { label: 'AutoCreativa',            href: 'https://www.autocreativa.com',             icon: ExternalLink },
+  { label: 'LinkedIn',                href: 'https://www.linkedin.com/in/nelsonalejandroramos/', icon: Linkedin  },
+  { label: 'GitHub',                  href: 'https://github.com/nelsonalejandro',       icon: Github      },
+  { label: 'contacto@nelsonramos.cl', href: 'mailto:contacto@nelsonramos.cl',           icon: Mail        },
 ];
+
+/* ─── Helpers ────────────────────────────────────────────────── */
+
+/** Fetch a local resource and return its base64-encoded content */
+async function fetchAsBase64(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`No se pudo obtener ${url}`);
+  const buf = await res.arrayBuffer();
+  let binary = '';
+  const bytes = new Uint8Array(buf);
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
+/** Fetch the HTML template and inject dynamic values */
+async function buildEmailBody(amazonLink) {
+  const res = await fetch('/email_template.html');
+  let html = await res.text();
+  html = html.replace(/\{\{AMAZON_LINK\}\}/g, amazonLink);
+  html = html.replace(/\{\{UNSUBSCRIBE_LINK\}\}/g, '#');
+  return html;
+}
+
+/** Send email with PDF attachment via SMTP.js */
+async function sendViaSmtp({ toEmail }) {
+  // Load HTML template and PDF in parallel
+  const [htmlBody, pdfBase64] = await Promise.all([
+    buildEmailBody(VITE_AMAZON_LINK),
+    fetchAsBase64('/assets/primer_capitulo_gratis.pdf'),
+  ]);
+
+  // window.Email is loaded via the smtpjs.com CDN script in index.html
+  const result = await window.Email.send({
+    Host:       VITE_EMAIL_HOST,
+    Port:       parseInt(VITE_EMAIL_PORT, 10),
+    Username:   VITE_EMAIL_USER,
+    Password:   VITE_EMAIL_PASS,
+    To:         toEmail,
+    From:       `Nelson Ramos <${VITE_EMAIL_USER}>`,
+    Subject:    '📘 Tu primer capítulo gratis — Prompt Engineering para Ingenieros',
+    Body:       htmlBody,
+    Attachments: [
+      {
+        name: 'primer_capitulo_gratis.pdf',
+        data: `data:application/pdf;base64,${pdfBase64}`,
+      },
+    ],
+  });
+
+  if (result !== 'OK') throw new Error(result);
+}
+
+/* ─── Bio page ───────────────────────────────────────────────── */
 
 function BiographyPage({ onBack }) {
   return (
@@ -26,7 +80,7 @@ function BiographyPage({ onBack }) {
 
       <main className="container">
         <div className="bio-layout">
-          {/* Image column with overlay */}
+          {/* Image with overlay */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
@@ -34,7 +88,6 @@ function BiographyPage({ onBack }) {
             className="bio-hero-image-wrap"
           >
             <img src="/assets/nelson_author.png" alt="Nelson Ramos" />
-
             <div className="bio-image-overlay">
               <button className="bio-back-btn" onClick={onBack}>
                 <ArrowLeft size={16} />
@@ -58,7 +111,7 @@ function BiographyPage({ onBack }) {
             </div>
           </motion.div>
 
-          {/* Text column */}
+          {/* Text */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
@@ -70,7 +123,7 @@ function BiographyPage({ onBack }) {
 
             <p>Nací en Talca, Chile, el 28 de septiembre de 1990. Desde muy joven desarrollé una curiosidad insaciable por las ciencias de la computación, enraizada desde mis primeros contactos con videoconsolas hacia el año 1998. Me titulé como Ingeniero en Ejecución Informática del I.P. Santo Tomás sede Talca en el año 2015 y, tras explorar diversas áreas de la informática, en 2019 tomé la decisión definitiva de enfocarme de lleno en el desarrollo de software.</p>
 
-            <p>El periodo 2019-2020 fue un verdadero punto de inflexión. Viví el estallido social a pasos del metro, luego la pandemia mundial cambió todo radicalmente. Tomé la decisión de volver a Talca, donde aquella mudanza forzada se transformó en una etapa de reinvención total: formación continua, teletrabajo, deporte y hábitos conscientes. Un cambio de <em>mindset</em> que me otorgó una vida más plena y profesional.</p>
+            <p>El periodo 2019–2020 fue un verdadero punto de inflexión. Viví el estallido social a pasos del metro, luego la pandemia mundial cambió todo radicalmente. Tomé la decisión de volver a Talca, donde aquella mudanza forzada se transformó en una etapa de reinvención total: formación continua, teletrabajo, deporte y hábitos conscientes. Un cambio de <em>mindset</em> que me otorgó una vida más plena y profesional.</p>
 
             <p>En el ámbito laboral, participé en proyectos tecnológicos de gran envergadura: <strong>Bolsa de Comercio de Santiago</strong>, <strong>Gasconnet</strong>, <strong>RedPay</strong> y proyectos asociados a <strong>Indra</strong> y <strong>Subtel</strong>. Desde 2022 opero al 100% en teletrabajo a través de mi emprendimiento <strong>AutoCreativa</strong>, donde desarrollo productos digitales aplicando enfoques modernos como el <em>vibe coding</em> y arquitecturas generativas de IA.</p>
 
@@ -86,11 +139,13 @@ function BiographyPage({ onBack }) {
   );
 }
 
+/* ─── Main App ───────────────────────────────────────────────── */
+
 function App() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail]     = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError]     = useState('');
   const [currentPage, setCurrentPage] = useState('home');
 
   const handleDownload = async (e) => {
@@ -100,27 +155,12 @@ function App() {
     setLoading(true);
     setError('');
 
-    const triggerDownload = () => {
-      window.open(VITE_PDF_URL, '_blank');
-    };
-
     try {
-      await emailjs.send(
-        VITE_EMAILJS_SERVICE_ID,
-        VITE_EMAILJS_TEMPLATE_ID,
-        {
-          to_email: email,
-          pdf_url: VITE_PDF_URL,
-          amazon_link: VITE_AMAZON_LINK,
-        },
-        VITE_EMAILJS_PUBLIC_KEY
-      );
+      await sendViaSmtp({ toEmail: email });
       setSuccess(true);
-      triggerDownload();
     } catch (err) {
-      console.error('EmailJS error:', err);
-      setError('No pudimos enviar el correo, pero aquí tienes tu descarga directa.');
-      triggerDownload();
+      console.error('SMTP send error:', err);
+      setError('No pudimos enviar el correo. Por favor intenta nuevamente o escríbenos a contacto@nelsonramos.cl');
     } finally {
       setLoading(false);
     }
@@ -137,7 +177,7 @@ function App() {
 
       <main className="container">
         <section className="hero">
-          <motion.div 
+          <motion.div
             className="hero-content"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -145,24 +185,26 @@ function App() {
           >
             <h1>Domina la Economía de la IA. Multiplica tu Productividad.</h1>
             <p>La guía radical para estructurar prompts como ingeniero, desplegar ecosistemas de agentes autónomos y recortar tus costos de API en un 70%. Disponible ahora por solo ${VITE_PRICE} USD.</p>
-            
+
             <div className="glass-card download-card" style={{ marginBottom: '2.5rem', marginTop: '2.5rem', border: '1px solid rgba(245, 194, 17, 0.3)', background: 'rgba(20, 30, 45, 0.6)' }}>
               <h3 style={{ marginBottom: '1rem', color: 'var(--accent-color)', fontSize: '1.4rem' }}>Recibe el 1º Capítulo Gratis</h3>
+
               {success ? (
-                <motion.div 
-                  initial={{ opacity: 0 }} 
+                <motion.div
+                  initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#4ade80', fontWeight: 'bold' }}>
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#4ade80', fontWeight: 'bold' }}
+                >
                   <CheckCircle size={24} />
-                  <span>¡Revisa tu bandeja de entrada! Hemos iniciado la descarga del PDF.</span>
+                  <span>¡Listo! El PDF va en camino a tu bandeja de entrada.</span>
                 </motion.div>
               ) : (
                 <form onSubmit={handleDownload}>
                   <div className="form-group">
-                    <input 
-                      type="email" 
-                      className="input" 
-                      placeholder="Tu mejor correo electrónico" 
+                    <input
+                      type="email"
+                      className="input"
+                      placeholder="Tu mejor correo electrónico"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -172,7 +214,7 @@ function App() {
                       {loading ? (
                         <>
                           <Loader size={20} style={{ animation: 'spin 1s linear infinite' }} />
-                          Enviando...
+                          Enviando PDF…
                         </>
                       ) : (
                         <>
@@ -182,24 +224,26 @@ function App() {
                       )}
                     </button>
                   </div>
+
                   {error && (
-                    <motion.p 
-                      initial={{ opacity: 0 }} 
+                    <motion.p
+                      initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       style={{ fontSize: '0.85rem', margin: '0.5rem 0 0 0', color: '#f59e0b' }}
                     >
                       {error}
                     </motion.p>
                   )}
+
                   <p style={{ fontSize: '0.85rem', margin: '0.5rem 0 0 0', color: 'var(--text-secondary)' }}>
-                    *Te enviaremos el PDF directamente a tu correo antes de realizar una compra
+                    *Te enviaremos el PDF directamente a tu correo. Sin spam.
                   </p>
                 </form>
               )}
             </div>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="hero-image"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -209,7 +253,7 @@ function App() {
               <img src="/assets/book_cover.png" alt="Portada del libro de Economía de la IA y Prompt Engineering" className="main-book-cover float-animation" />
             </div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
@@ -226,21 +270,21 @@ function App() {
 
         <section className="section" id="por-que-leer">
           <div className="pause-card-container">
-            <motion.div 
+            <motion.div
               className="pause-image"
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <img 
-                src="/assets/lectora_nueva.png" 
-                onError={(e) => { e.target.onerror = null; e.target.src = "/assets/lectora.png"; }}
-                alt="Ingeniera leyendo el libro de Prompt Engineering mientras trabaja" 
+              <img
+                src="/assets/lectora_nueva.png"
+                onError={(e) => { e.target.onerror = null; e.target.src = '/assets/lectora.png'; }}
+                alt="Ingeniera leyendo el libro de Prompt Engineering mientras trabaja"
               />
             </motion.div>
 
-            <motion.div 
+            <motion.div
               className="pause-content"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -248,15 +292,9 @@ function App() {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <h2>¿Por qué hacer una pausa y leer este libro?</h2>
-              <p>
-                Vivimos en la era de los videos rápidos y los tutoriales fragmentados, donde consumimos información a ciegas sin consolidar fundamentos reales. Este libro nació con un propósito: darte el espacio y la tranquilidad para estructurar tu conocimiento.
-              </p>
-              <p>
-                La diferencia entre un consumidor superficial y una ingeniera o ingeniero capaz de orquestar ecosistemas de agentes autónomos, radica en la <strong>lectura profunda</strong>. Detente, asimila y descubre cómo evitar los costosos errores del ensayo y error.
-              </p>
-              <p className="highlight-text">
-                No se trata solo de hablarle a la máquina; se trata de dominar la infraestructura del futuro.
-              </p>
+              <p>Vivimos en la era de los videos rápidos y los tutoriales fragmentados, donde consumimos información a ciegas sin consolidar fundamentos reales. Este libro nació con un propósito: darte el espacio y la tranquilidad para estructurar tu conocimiento.</p>
+              <p>La diferencia entre un consumidor superficial y una ingeniera o ingeniero capaz de orquestar ecosistemas de agentes autónomos, radica en la <strong>lectura profunda</strong>. Detente, asimila y descubre cómo evitar los costosos errores del ensayo y error.</p>
+              <p className="highlight-text">No se trata solo de hablarle a la máquina; se trata de dominar la infraestructura del futuro.</p>
             </motion.div>
           </div>
         </section>
@@ -264,14 +302,8 @@ function App() {
         <section className="section" id="contenido" style={{ padding: '6rem 0' }}>
           <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem' }}>Tabla de Contenido Oficial</h2>
           <div className="toc-elaborate-grid">
-            
-            <motion.div 
-              className="toc-part-card"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
+
+            <motion.div className="toc-part-card" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
               <div className="toc-part-header">
                 <span className="part-number">Parte 1</span>
                 <h3>Fundamentos y Optimización</h3>
@@ -288,13 +320,7 @@ function App() {
               </ul>
             </motion.div>
 
-            <motion.div 
-              className="toc-part-card"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
+            <motion.div className="toc-part-card" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}>
               <div className="toc-part-header">
                 <span className="part-number">Parte 2</span>
                 <h3>Ecosistemas Multi-Agente</h3>
@@ -312,13 +338,7 @@ function App() {
               </ul>
             </motion.div>
 
-            <motion.div 
-              className="toc-part-card"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
+            <motion.div className="toc-part-card" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }}>
               <div className="toc-part-header">
                 <span className="part-number">Parte 3</span>
                 <h3>Casos Reales y Producción</h3>
@@ -342,16 +362,16 @@ function App() {
           <p>Nelson Ramos es Ingeniero Informático y Desarrollador Full-Stack trabajando en arquitecturas modernas con modelos fundacionales generativos.</p>
           <div className="author-links">
             <button onClick={() => setCurrentPage('bio')} className="link-button">
-              <BookOpen size={18} style={{ marginRight: '6px' }}/> Biografía
+              <BookOpen size={18} style={{ marginRight: '6px' }} /> Biografía
             </button>
             <a href="https://www.nelsonramos.cl" target="_blank" rel="noreferrer">
-              <ExternalLink size={18} style={{ marginRight: '6px' }}/> Portafolio
+              <ExternalLink size={18} style={{ marginRight: '6px' }} /> Portafolio
             </a>
             <a href="https://www.autocreativa.com" target="_blank" rel="noreferrer">
-              <ExternalLink size={18} style={{ marginRight: '6px' }}/> AutoCreativa
+              <ExternalLink size={18} style={{ marginRight: '6px' }} /> AutoCreativa
             </a>
             <a href="mailto:contacto@nelsonramos.cl">
-              <Mail size={18} style={{ marginRight: '6px' }}/> Contacto
+              <Mail size={18} style={{ marginRight: '6px' }} /> Contacto
             </a>
           </div>
         </section>
