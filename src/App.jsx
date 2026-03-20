@@ -269,7 +269,7 @@ function BiographyPage({ onBack, onOpenGame }) {
       </main>
 
       <footer className="site-footer">
-        <p>Hecho con ⚡ y demasiado café &mdash; <button className="glitch-footer-link" onClick={() => onOpenGame()}>GL1TCH</button></p>
+        <p>&copy; 2026 Nelson Ramos. &mdash; <button className="glitch-footer-link" onClick={() => onOpenGame()}>GL1TCH</button></p>
       </footer>
     </div>
   );
@@ -518,7 +518,7 @@ function App() {
       </main>
 
       <footer className="site-footer">
-        <p>Hecho con ⚡ y demasiado café &mdash; <button className="glitch-footer-link" onClick={() => setShowGame(true)}>GL1TCH</button></p>
+        <p>&copy; 2026 Nelson Ramos. &mdash; <button className="glitch-footer-link" onClick={() => setShowGame(true)}>GL1TCH</button></p>
       </footer>
     </div>
 
