@@ -13,11 +13,11 @@ const VITE_EMAIL_PASS   = import.meta.env.VITE_EMAIL_PASS   || '';
 const GAME_DURATION = 10;
 
 function getRank(clicks) {
-  if (clicks >= 120) return { label: '\u26a1 GLITCH MASTER', color: '#F5C211' };
-  if (clicks >= 80)  return { label: '\ud83d\udd25 OVERCLOCKER',  color: '#ff7c3a' };
-  if (clicks >= 50)  return { label: '\ud83d\udcbb INGENIERO',    color: '#4ade80' };
-  if (clicks >= 25)  return { label: '\ud83d\udc4d HUMANO',       color: '#94a3b8' };
-  return               { label: '\ud83d\udc0c TORTUGA',          color: '#64748b' };
+  if (clicks >= 120) return { label: '\u26a1 GLITCH MASTER', color: '#F5C211', videoId: 'LjXWqKKLW6g', videoExtra: '&list=RDLjXWqKKLW6g&start_radio=1' };
+  if (clicks >= 80)  return { label: '\ud83d\udd25 OVERCLOCKER',  color: '#ff7c3a', videoId: 'Gw-rUCwLoQ0', videoExtra: '' };
+  if (clicks >= 50)  return { label: '\ud83d\udcbb INGENIERO',    color: '#4ade80', videoId: 'Hse_HTX6KGs', videoExtra: '' };
+  if (clicks >= 25)  return { label: '\ud83d\udc4d HUMANO',       color: '#94a3b8', videoId: '22z31vdqnWI', videoExtra: '' };
+  return               { label: '\ud83d\udc0c TORTUGA',          color: '#64748b', videoId: '856GA_JWVoU', videoExtra: '' };
 }
 
 function GlitchGame({ onClose }) {
@@ -133,7 +133,18 @@ function GlitchGame({ onClose }) {
             <div className="glitch-result-score">{clicks}</div>
             <p style={{ color: '#94a3b8', margin: '0 0 0.25rem', fontSize: '0.9rem' }}>clicks en {GAME_DURATION}s — {cps} cps</p>
             <p className="glitch-rank" style={{ color: rank.color }}>{rank.label}</p>
-            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div style={{ margin: '1.25rem 0 0', borderRadius: '0.5rem', overflow: 'hidden', lineHeight: 0 }}>
+              <iframe
+                width="100%"
+                height="180"
+                src={`https://www.youtube.com/embed/${rank.videoId}?autoplay=1&rel=0${rank.videoExtra}`}
+                title="rank video"
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+                style={{ border: 'none', display: 'block' }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
               <button className="glitch-btn" onClick={startCountdown}>[ RETRY ]</button>
               <button className="glitch-btn" style={{ background: 'transparent', color: '#94a3b8', border: '1px solid #94a3b833' }} onClick={onClose}>[ SALIR ]</button>
             </div>
