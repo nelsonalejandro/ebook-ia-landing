@@ -163,7 +163,8 @@ const SOCIAL_LINKS = [
 
 /* ─── Email via backend (nodemailer) ───────────────────── */
 async function sendEmail(email) {
-  const res = await fetch('/api/send-email', {
+  const base = import.meta.env.VITE_API_URL || '';
+  const res = await fetch(`${base}/api/send-email`, {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({ email }),
