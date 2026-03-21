@@ -1,113 +1,139 @@
-# Prompt Engineering para Ingenieros — Landing Page
+# Prompt Engineering — Landing Page
 
-Landing page oficial del libro **"Prompt Engineering para Ingenieros"** de Nelson Ramos.  
-Construida con Vite + React. Incluye formulario de captura de email con envío automático del primer capítulo en PDF usando **EmailJS** (sin backend).
+Landing page del libro **"Prompt Engineering"** de Nelson Ramos.
 
 ---
 
-## Descripción
+## Stack Tecnológico
 
-- Página de presentación del libro con portada, tabla de contenido y biografía del autor.
-- Formulario que captura el email del visitante, envía el PDF del capítulo 1 directamente a su bandeja de entrada, y abre la descarga automáticamente.
-- Botón de compra en Amazon Kindle.
+**Frontend:** Vite + React 19 + Framer Motion + Lucide React
 
-## Requisitos
+**Backend:** NestJS + Nodemailer
 
-- Node.js 18+
-- Cuenta gratuita en [EmailJS](https://www.emailjs.com/) (200 emails/mes gratis)
+---
 
-## Instalación
-
-```bash
-# Clonar el repo
-git clone <url-del-repositorio>
-cd ebook-ia-landing
-
-# Instalar dependencias
-npm install
-
-# Configurar variables de entorno
-cp .env.example .env
-# Luego edita .env con tus valores reales (ver sección de configuración)
-```
-
-## Configuración del archivo `.env`
-
-Copia `.env.example` → `.env` y rellena los valores:
-
-| Variable | Descripción |
-|---|---|
-| `VITE_PRICE` | Precio del libro (ej: `9.99`) |
-| `VITE_AMAZON_LINK` | URL de compra en Amazon KDP |
-| `VITE_PDF_URL` | URL pública del PDF del capítulo 1 |
-| `VITE_EMAILJS_SERVICE_ID` | ID del servicio en EmailJS |
-| `VITE_EMAILJS_TEMPLATE_ID` | ID del template en EmailJS |
-| `VITE_EMAILJS_PUBLIC_KEY` | Public Key de tu cuenta EmailJS |
-
-### Configurar EmailJS paso a paso
-
-1. Crea una cuenta en [emailjs.com](https://www.emailjs.com/) (gratuita, no requiere tarjeta)
-2. Ve a **Email Services** → conecta Gmail u otro proveedor SMTP
-3. Ve a **Email Templates** → crea un template con estos parámetros dinámicos:
-   - `{{to_email}}` — email del destinatario (capturado del formulario)
-   - `{{pdf_url}}` — enlace al PDF para descargar
-   - `{{amazon_link}}` — enlace de compra en Amazon
-4. Copia el **Service ID**, **Template ID** y **Public Key** al `.env`
-
-> ⚠️ **Importante:** Nunca subas el archivo `.env` al repositorio. Está incluido en `.gitignore`.
-
-## Cómo ejecutar el proyecto
-
-```bash
-# Modo desarrollo (con hot-reload)
-npm run dev
-# → http://localhost:5173
-
-# Build para producción
-npm run build
-
-# Preview del build
-npm run preview
-```
-
-## PDF del capítulo 1
-
-El PDF está ubicado en `public/assets/primer_capitulo_gratis.pdf`.  
-Es servido estáticamente por Vite en `/assets/primer_capitulo_gratis.pdf`.
-
-Para generar/actualizar el PDF desde el manuscrito Markdown del libro, usa las herramientas del proyecto `book-prompt-engineering` (Pandoc + scripts).
-
-## Estructura del proyecto
+## Estructura del Proyecto
 
 ```
-ebook-ia-landing/
 ├── public/
-│   ├── assets/
-│   │   ├── book_cover.png
-│   │   ├── lectora_nueva.png
-│   │   ├── nelson_author.png
-│   │   └── primer_capitulo_gratis.pdf  ← PDF del capítulo 1
-│   ├── favicon.svg
-│   └── icons.svg
+│   └── assets/
+│       ├── book_cover.png
+│       ├── lectora_nueva.png
+│       ├── nelson_author.png
+│       └── primer_capitulo_gratis.pdf
 ├── src/
-│   ├── App.jsx          ← lógica principal + EmailJS
-│   ├── App.css
+│   ├── App.jsx
 │   ├── index.css
 │   └── main.jsx
-├── email_template.html  ← referencia visual del template de email
-├── .env.example         ← variables requeridas (copia a .env)
+├── api-backend/           # NestJS API
+│   ├── src/
+│   │   ├── main.ts
+│   │   ├── app.module.ts
+│   │   ├── email/
+│   │   └── common/
+│   ├── .env.example
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── nest-cli.json
+├── email_template.html
+├── .env.example
 ├── vite.config.js
 └── package.json
 ```
 
-## Stack tecnológico
+---
 
-- [Vite](https://vitejs.dev/) — bundler ultrarrápido
-- [React 19](https://react.dev/) — UI
-- [Framer Motion](https://www.framer.com/motion/) — animaciones
-- [Lucide React](https://lucide.dev/) — íconos
-- [EmailJS](https://www.emailjs.com/) — envío de emails sin backend
+## Instalación
+
+### Frontend
+```bash
+npm install
+npm run dev
+```
+
+### Backend
+```bash
+cd api-backend
+npm install
+npm run start:dev
+```
 
 ---
 
-© 2026 Nelson Ramos · [nelsonramos.cl](https://www.nelsonramos.cl) · [AutoCreativa](https://www.autocreativa.com)
+## Configuración
+
+### Frontend (.env)
+```env
+VITE_BOOK_URL=ebook.nelsonramos.cl
+VITE_PRICE=9.99
+VITE_AMAZON_LINK=https://amazon.com/
+VITE_API_URL=
+VITE_API_TOKEN=tu-token-seguro
+```
+
+### Backend (api-backend/.env)
+```env
+NODE_ENV=development
+PORT=3001
+
+EMAIL_HOST=mail.tudominio.cl
+EMAIL_PORT=587
+EMAIL_USER=tu@email.com
+EMAIL_PASS=tu_password
+
+AMAZON_LINK=https://amazon.com/
+API_TOKEN=tu-token-seguro
+
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=3
+
+CORS_ORIGINS=http://localhost:5173,https://book.tudominio.cl
+```
+
+---
+
+## Despliegue
+
+### Build Frontend
+```bash
+npm run build
+# Sube la carpeta dist/
+```
+
+### Build Backend
+```bash
+cd api-backend
+npm run build
+# Sube api-backend/dist/ + api-backend/src/
+```
+
+---
+
+## API Endpoints
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/api/send-email` | Envía email con PDF adjunto |
+
+**Headers requeridos:**
+```
+x-api-token: <API_TOKEN>
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{ "email": "usuario@example.com" }
+```
+
+---
+
+## Seguridad
+
+- Token de API obligatorio (`x-api-token`)
+- Rate limiting: 3 solicitudes por IP cada 15 minutos
+- CORS configurado para dominios específicos
+
+---
+
+© 2026 Nelson Ramos · [nelsonramos.cl](https://nelsonramos.cl)

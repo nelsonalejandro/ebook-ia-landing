@@ -84,8 +84,8 @@ function GlitchGame({ onClose }) {
         {phase === 'idle' && (
           <>
             <p className="glitch-tag">// easter_egg.exe</p>
-            <h2 className="glitch-title" data-text="GLITCH TAP">
-              GLITCH<br/>TAP
+            <h2 className="glitch-title" data-text="Nelson Ramos">
+              Nelson<br/>Ramos
             </h2>
             <p className="glitch-desc">
               {GAME_DURATION} segundos.<br/>Haz click lo más rápido que puedas.
@@ -163,11 +163,15 @@ const SOCIAL_LINKS = [
 
 /* ─── Email via backend (nodemailer) ───────────────────── */
 async function sendEmail(email) {
-  const base = import.meta.env.VITE_API_URL || '';
+  const base  = import.meta.env.VITE_API_URL || '';
+  const token = import.meta.env.VITE_API_TOKEN;
   const res = await fetch(`${base}/api/send-email`, {
     method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ email }),
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-token':  token || '',
+    },
+    body: JSON.stringify({ email }),
   });
   const data = await res.json();
   if (!res.ok || !data.ok) throw new Error(data.error || 'Error enviando email');
@@ -182,22 +186,24 @@ function BiographyPage({ onBack, onOpenGame }) {
       <div className="bg-glow-2"></div>
 
       <main className="container">
-        <div className="bio-layout">
-          {/* Image with overlay */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55 }}
-            className="bio-hero-image-wrap"
-          >
-            <img src="/assets/nelson_author.png" alt="Nelson Ramos" />
-            <div className="bio-image-overlay">
-              <button className="bio-back-btn" onClick={onBack}>
-                <ArrowLeft size={16} />
-                Volver
-              </button>
-              <p className="bio-overlay-subtitle">Volver al inicio de la landing</p>
-              <div className="bio-social-links">
+        <div className="bio-wrapper">
+          <button className="bio-back-btn" onClick={onBack}>
+            <ArrowLeft size={16} />
+            Volver
+          </button>
+          
+          <div className="bio-layout">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="bio-left"
+            >
+              <div className="bio-image-card">
+                <img src="/assets/nelson_author.png" alt="Nelson Ramos" />
+                <div className="bio-image-glow"></div>
+              </div>
+              <div className="bio-social-row">
                 {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => (
                   <a
                     key={href}
@@ -205,38 +211,38 @@ function BiographyPage({ onBack, onOpenGame }) {
                     target={href.startsWith('mailto') ? undefined : '_blank'}
                     rel="noreferrer"
                     className="bio-social-link"
+                    title={label}
                   >
-                    <Icon size={12} />
-                    {label}
+                    <Icon size={18} />
                   </a>
                 ))}
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          {/* Text */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.12 }}
-            className="bio-text-content"
-          >
-            <h1>Nelson Ramos</h1>
-            <p className="bio-role">Ingeniero Informático · Desarrollador Full-Stack · Autor</p>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="bio-right"
+            >
+              <span className="bio-label">Sobre el autor</span>
+              <h1>Nelson Ramos</h1>
+              <p className="bio-role">Ingeniero Informático · Desarrollador Full-Stack · Autor</p>
 
-            <p>Nací en Talca, Chile, el 28 de septiembre de 1990. Desde muy joven desarrollé una curiosidad insaciable por las ciencias de la computación, enraizada desde mis primeros contactos con videoconsolas hacia el año 1998. Me titulé como Ingeniero en Ejecución Informática del I.P. Santo Tomás sede Talca en el año 2015 y, tras explorar diversas áreas de la informática, en 2019 tomé la decisión definitiva de enfocarme de lleno en el desarrollo de software.</p>
+              <p>Nací en Talca, Chile, el 28 de septiembre de 1990. Desde muy joven desarrollé una curiosidad insaciable por las ciencias de la computación, enraizada desde mis primeros contactos con videoconsolas hacia el año 1998. Me titulé como Ingeniero en Ejecución Informática del I.P. Santo Tomás sede Talca en el año 2015 y, tras explorar diversas áreas de la informática, en 2019 tomé la decisión definitiva de enfocarme de lleno en el desarrollo de software.</p>
 
-            <p>El periodo 2019–2020 fue un verdadero punto de inflexión. Viví el estallido social a pasos del metro, luego la pandemia mundial cambió todo radicalmente. Tomé la decisión de volver a Talca, donde aquella mudanza forzada se transformó en una etapa de reinvención total: formación continua, teletrabajo, deporte y hábitos conscientes. Un cambio de <em>mindset</em> que me otorgó una vida más plena y profesional.</p>
+              <p>El periodo 2019–2020 fue un verdadero punto de inflexión. Viví el estallido social a pasos del metro, luego la pandemia mundial cambió todo radicalmente. Tomé la decisión de volver a Talca, donde aquella mudanza forzada se transformó en una etapa de reinvención total: formación continua, teletrabajo, deporte y hábitos conscientes. Un cambio de <em>mindset</em> que me otorgar una vida más plena y profesional.</p>
 
-            <p>En el ámbito laboral, participé en proyectos tecnológicos de gran envergadura: <strong>Bolsa de Comercio de Santiago</strong>, <strong>Gasconnet</strong>, <strong>RedPay</strong> y proyectos asociados a <strong>Indra</strong> y <strong>Subtel</strong>. Desde 2022 opero al 100% en teletrabajo a través de mi emprendimiento <strong>AutoCreativa</strong>, donde desarrollo productos digitales aplicando enfoques modernos como el <em>vibe coding</em> y arquitecturas generativas de IA.</p>
+              <p>En el ámbito laboral, participé en proyectos tecnológicos de gran envergadura: <strong>Bolsa de Comercio de Santiago</strong>, <strong>Gasconnet</strong>, <strong>RedPay</strong> y proyectos asociados a <strong>Indra</strong> y <strong>Subtel</strong>. Desde 2022 opero al 100% en teletrabajo a través de mi emprendimiento <strong>AutoCreativa</strong>, donde desarrollo productos digitales aplicando enfoques modernos como el <em>vibe coding</em> y arquitecturas generativas de IA.</p>
 
-            <p>Este libro nació de esas notas que tomé aquella noche mirando una factura de AWS de $890 USD. Lo escribí para que otros ingenieros de Chile y Latinoamérica no repitan los mismos errores que cometí.</p>
-          </motion.div>
+              <p>Este libro nació de esas notas que tomé aquella noche mirando una factura de AWS de $890 USD. Lo escribí para que otros ingenieros de Chile y Latinoamérica no repitan los mismos errores que cometí.</p>
+            </motion.div>
+          </div>
         </div>
       </main>
 
       <footer className="site-footer">
-        <p>&copy; 2026 Nelson Ramos. &mdash; <button className="glitch-footer-link" onClick={() => onOpenGame()}>GL1TCH</button></p>
+        <button className="glitch-footer-link" onClick={() => onOpenGame()}>© 2026 — Nelson Ramos</button>
       </footer>
     </div>
   );
@@ -272,7 +278,12 @@ function App() {
   };
 
   if (currentPage === 'bio') {
-    return <BiographyPage onBack={() => setCurrentPage('home')} onOpenGame={() => setShowGame(true)} />;
+    return (
+      <>
+        <BiographyPage onBack={() => setCurrentPage('home')} onOpenGame={() => setShowGame(true)} />
+        {showGame && <GlitchGame onClose={() => setShowGame(false)} />}
+      </>
+    );
   }
 
 
@@ -296,14 +307,14 @@ function App() {
             <div className="glass-card download-card" style={{ marginBottom: '2.5rem', marginTop: '2.5rem', border: '1px solid rgba(245, 194, 17, 0.3)', background: 'rgba(20, 30, 45, 0.6)' }}>
               <h3 style={{ marginBottom: '1rem', color: 'var(--accent-color)', fontSize: '1.4rem' }}>Recibe el 1º Capítulo Gratis</h3>
 
-              {success ? (
+                  {success ? (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#4ade80', fontWeight: 'bold' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#fff', fontWeight: 'bold' }}
                 >
-                  <CheckCircle size={24} />
-                  <span>¡Listo! El PDF va en camino a tu bandeja de entrada.</span>
+                  <CheckCircle size={24} style={{ color: 'var(--accent-color)' }} />
+                  <span>¡Enviado! Revisa tu bandeja de entrada en breve...</span>
                 </motion.div>
               ) : (
                 <form onSubmit={handleDownload}>
@@ -486,7 +497,7 @@ function App() {
       </main>
 
       <footer className="site-footer">
-        <p>&copy; 2026 Nelson Ramos. &mdash; <button className="glitch-footer-link" onClick={() => setShowGame(true)}>GL1TCH</button></p>
+        <button className="glitch-footer-link" onClick={() => setShowGame(true)}>© 2026 — Nelson Ramos</button>
       </footer>
     </div>
 
