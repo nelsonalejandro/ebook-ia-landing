@@ -8,7 +8,7 @@ Landing page del libro **"Prompt Engineering"** de Nelson Ramos.
 
 **Frontend:** Vite + React 19 + Framer Motion + Lucide React
 
-**Backend:** NestJS + Nodemailer ([ebook-ia-landing-backend](https://github.com/nelsonalejandro/ebook-ia-landing-backend))
+**Backend:** NestJS + Nodemailer ([ebook-ia-landing-api](https://github.com/nelsonalejandro/ebook-ia-landing-api))
 
 ---
 
