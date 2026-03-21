@@ -171,7 +171,11 @@ async function sendEmail(email) {
       'Content-Type': 'application/json',
       'x-api-token':  token || '',
     },
-    body: JSON.stringify({ email }),
+    body: JSON.stringify({ 
+      email, 
+      amazonLink: VITE_AMAZON_LINK,
+      price: VITE_PRICE ? parseFloat(VITE_PRICE) : undefined,
+    }),
   });
   const data = await res.json();
   if (!res.ok || !data.ok) throw new Error(data.error || 'Error enviando email');
