@@ -25,10 +25,3 @@ dist-ssr
 # OS
 .DS_Store
 Thumbs.db
-
-# Build outputs
-api-backend/dist
-
-# Dependencies lock files (optional, uncomment if needed)
-# package-lock.json
-# api-backend/package-lock.json
