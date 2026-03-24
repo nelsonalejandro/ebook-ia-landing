@@ -450,8 +450,8 @@ function App() {
               </div>
               <ul className="chapter-list">
                 <li><strong>Capítulo 8:</strong> Fundamentos de Agentes de IA</li>
-                <li><strong>Capítulo 9:</strong> Arquitecturas Multi-Agente</li>
-                <li><strong>Capítulo 10:</strong> Frameworks Comparativos</li>
+                <li><strong>Capítulo 9:</strong> Diseño de Arquitecturas Multi-Agente</li>
+                <li><strong>Capítulo 10:</strong> Frameworks de Agentes — Guía Comparativa 2026</li>
                 <li><strong>Capítulo 11:</strong> Memoria y Contexto</li>
                 <li><strong>Capítulo 12:</strong> Herramientas (Tools)</li>
                 <li><strong>Capítulo 13:</strong> Arquitectura de Costos</li>
@@ -468,9 +468,9 @@ function App() {
               </div>
               <ul className="chapter-list">
                 <li><strong>Capítulo 16:</strong> Codificación Asistida</li>
-                <li><strong>Capítulo 17:</strong> Análisis de Datos Complejos</li>
+                <li><strong>Capítulo 17:</strong> Análisis de Datos de Alta Complejidad (RAG 2.0)</li>
                 <li><strong>Capítulo 18:</strong> Resolución Autónoma</li>
-                <li><strong>Capítulo 19:</strong> Seguridad y Guardrails</li>
+                <li><strong>Capítulo 19:</strong> Seguridad, Ética y Gobierno (Guardrails)</li>
                 <li><strong>Capítulo 20:</strong> Despliegue en Producción</li>
                 <li><strong>Capítulo 21:</strong> El Futuro del Ingeniero Prompt</li>
               </ul>
